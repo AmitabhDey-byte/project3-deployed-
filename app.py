@@ -31,8 +31,8 @@ if st.sidebar.button("Show Top Actor"):
     actor = df['cast'].str.split(', ').explode().value_counts().head(1)
     st.write(actor)
 
-tab1, tab2, tab3, tab4, tab5 = st.tabs(["Overview", "Content Trends", "People Insights", "Genres & Ratings","Durations"])
-
+tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8,tab9  = st.tabs(["Overview", "Content Trends", "People Insights", "Genres & Ratings","Durations", "No of Seasons", "Top Directors","Top Actors","Avg monthly content"])
+#tab7,tab8,tab9, tab10  , "Top TV Shows", "Top Directors", "Avg monthly content"
 with tab1:
     st.subheader("Movies vs TV Shows")
     fig = plt.figure(figsize=(6,6))
@@ -101,3 +101,82 @@ with tab5:
     sea.barplot(x=tv_counts.index, y=tv_counts.values, palette='flare')
 
     st.pyplot(fig)
+with tab6:
+    st.subheader("Top Season Counts")
+
+    tv = df[df['type'] == 'TV Show'].copy()
+
+    tv_counts = tv['duration'].value_counts().head(10)
+
+    fig = plt.figure(figsize=(10, 5))
+
+    ax = sea.barplot(x=tv_counts.index, y=tv_counts.values, palette='flare', edgecolor='black')
+
+    plt.title("Top TV Show Season Counts", fontsize=15, weight='bold')
+    plt.xlabel("Seasons")
+    plt.ylabel("Number of Shows")
+
+    plt.grid(axis='y', linestyle='--', alpha=0.4)
+    plt.tight_layout()
+    st.pyplot(fig)
+with tab7:
+    st.subheader("Top Directors")
+
+    fig2=  plt.figure(figsize=(10, 6))
+
+    director_counts = df['director'].value_counts().head(10)
+
+    sea.barplot(x=director_counts.values, y=director_counts.index, color='#1303fc', edgecolor='#fc1703')
+
+    plt.title("Top 10 Directors", fontsize=14, weight='bold')
+    plt.xlabel("Number of Titles")
+    plt.ylabel("Director")
+
+    st.pyplot(fig2)
+
+with tab8:
+
+    st.subheader("Top Actors")
+
+    fig = plt.figure(figsize=(12, 5))
+    actor_counts = df['cast'].str.split(', ').explode().value_counts().head(10)
+    ax = sea.barplot(x=actor_counts.values, y=actor_counts.index, hue=actor_counts.index, palette='magma',
+                                                                                                               edgecolor='black')
+
+    for p in ax.patches:
+        ax.annotate(f'{int(p.get_width())}',
+                    (p.get_width(), p.get_y() + p.get_height() / 2),
+                    ha='left', va='center', fontsize=10, weight='bold')
+
+    plt.title("Top 10 Actors", fontsize=15, weight='bold')
+    plt.xlabel("Number of Titles", fontsize=12)
+    plt.ylabel("Actor", fontsize=12)
+
+    plt.grid(axis='x', linestyle='--', alpha=0.5)
+    plt.tight_layout()
+
+    st.pyplot(fig)
+with tab9:
+    st.subheader("Average monthnly Content")
+
+    df['date_added'] = pd.to_datetime(df['date_added'])
+    df['month'] = df['date_added'].dt.month
+
+    fig = plt.figure(figsize=(10, 5))
+
+    ax = sea.countplot(x='month', data=df, palette='viridis', hue='type', edgecolor='black')
+    for p in ax.patches:
+        ax.annotate(
+            f'{int(p.get_height())}',  # using the height as count value
+            (p.get_x() + p.get_width() / 2., p.get_height()),
+            # this i used to exactly align the text or the count value in the middle of the bars
+            ha='center', va='bottom', fontsize=9, weight='bold')
+
+    plt.title("Monthly Content Addition", fontsize=14, weight='bold')
+    plt.xlabel("Month")
+    plt.ylabel("Number of Titles")
+
+    plt.grid(axis='y', linestyle='--', alpha=0.5)
+    plt.tight_layout()
+    st.pyplot(fig)
+

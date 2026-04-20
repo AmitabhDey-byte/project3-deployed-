@@ -31,7 +31,7 @@ if st.sidebar.button("Show Top Actor"):
     actor = df['cast'].str.split(', ').explode().value_counts().head(1)
     st.write(actor)
 
-tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8,tab9  = st.tabs(["Overview", "Content Trends", "People Insights", "Genres & Ratings","Durations", "No of Seasons", "Top Directors","Top Actors","Avg monthly content"])
+tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8,tab9, tab10  = st.tabs(["Overview", "Content Trends", "People Insights", "Genres & Ratings","Durations", "No of Seasons", "Top Directors","Top Actors","Avg monthly content","Movie vs Year trend"])
 #tab7,tab8,tab9, tab10  , "Top TV Shows", "Top Directors", "Avg monthly content"
 with tab1:
     st.subheader("Movies vs TV Shows")
@@ -180,3 +180,18 @@ with tab9:
     plt.tight_layout()
     st.pyplot(fig)
 
+with tab10:
+    st.subheader("Movie vs Year Trend")
+
+    movies = df[df['type'] == 'Movie'].copy()
+    movies['duration'] = movies['duration'].astype(float)
+
+    fig = plt.figure(figsize=(10, 6))
+    sea.scatterplot(x='duration', y='release_year', data=movies, hue='rating', size='duration', sizes=(20, 200),
+                    palette='rainbow', alpha=0.7, edgecolor='black')
+    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+    plt.title("Movie Duration vs Release Year", fontsize=14, weight='bold')
+    plt.xlabel("Release Year")
+    plt.ylabel("Duration in minutes")
+
+    st.pyplot(fig)
